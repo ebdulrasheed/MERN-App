@@ -5,11 +5,11 @@ const app = express();
 
 const PORT = process.env.PORT || 5000;
 
-app.use((req, res, next) => {
-    console.log('Middleware');
-    console.log('Request Received: ', req);
-    next();
-});
+// app.use((req, res, next) => {
+//     console.log('Middleware');
+//     console.log('Request Received: ', req);
+//     next();
+// });
 
 // Connect to MongoDB
 db.connectMongoDB();
@@ -22,7 +22,7 @@ app.get('/', (req, res) => {
     });
 });
 
-// Routes
+// Add Routes
 routes.forEach(routes => {
     app.use(routes.path, routes.req);
 });
