@@ -1,12 +1,8 @@
 const express = require('express');
+const AuthController = require('../controllers/auth');
+const authMiddlware = require('../middlewares/auth');
 const Router = express.Router();
 
-Router.get("/", (req, res) => {
-    res.send({
-        success: "true",
-        statusCode: 200,
-        message: "Sucess! AUTH API POINT IS HIT"
-    });
-});
+Router.get("/", authMiddlware, AuthController.getUserProfile);
 
 module.exports = Router;
