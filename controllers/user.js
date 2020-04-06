@@ -1,14 +1,14 @@
-const mongoose = require("mongoose");
 const bcryptjs = require("bcryptjs");
 const UserModel = require("../models/User");
 const gravatar = require("gravatar");
 const { validationResult } = require("express-validator");
+const jwt = require('jsonwebtoken');
+const config = require('config');
 
 module.exports = {
     registerUser: async function (req, res) {
         const errors = validationResult(req);
-        let response;
-        
+
         if (!errors.isEmpty()) {
             return res.send({
                 statusCode: 400,
@@ -17,7 +17,6 @@ module.exports = {
             });
         }
 
-        console.log('Body: ', req.body);
         const { name, email, password } = req.body;
 
         try {
@@ -27,7 +26,7 @@ module.exports = {
             });
 
             if (userObj) {
-                res.send({
+                return res.send({
                     statusCode: 409,
                     status: false,
                     message: "Resource already exists"
@@ -45,34 +44,38 @@ module.exports = {
                 email,
                 password,
                 avatar: avatarURL
-            })
+            });
 
             const salt = await bcryptjs.genSalt();
             user.password = await bcryptjs.hash(password, salt);
 
-            userObj = await user.save();
+            await user.save();
 
-            res.send({
-                statusCode: 200,
-                status: true,
-                message: "User already exists",
-                data: userObj
+            jwt.sign({ id: user.id }, config.get("jwtSecret"), {
+                expiresIn: 2400000
+            }, (err, token) => {
+                let response = {};
+                if (err) {
+                    respone.statusCode = 500;
+                    response.status = false;
+                    response.message = "Server error";
+                } else {
+                    response.statusCode = 200;
+                    response.status = true;
+                    response.message = "User created successfully!";
+                    response.data = user;
+                    response.token = token;
+                }
+                return res.send(response);
             });
 
         } catch (err) {
             console.log('Error: ', err);
-            res.send({
+            return res.send({
                 statusCode: 500,
                 status: false,
                 message: err.message
             });
         }
-
-        response = {
-            success: "true",
-            statusCode: 200,
-            message: "Sucess! USER API POINT IS HIT"
-        }
-        res.status(200).json(response);
     }
 }
