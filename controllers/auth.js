@@ -1,12 +1,39 @@
 const UserModel = require("../models/User");
+const jwt = require("jsonwebtoken");
+const config = require("config");
+const bcryptjs = require('bcryptjs');
+const { validationResult } = require("express-validator");
 
 module.exports = {
-    getUserProfile: async function (req, res) {
+    authenticate: async function (req, res) {
+
+        /**
+         * LOGIN CODE HERE
+         * 
+         * SEARCH FOR USER via EMAIL
+         * if not found, respond with 494
+         * AUTHENTICATE
+         * CREATE JWT
+         * RETURN PROFILE + HWT
+         */
+
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.send({
+                statusCode: 400,
+                status: false,
+                message: errors.array()
+            });
+        }
 
         try {
-            let userObj = await UserModel.findById({
-                _id: req.decoded.id
-            }).select('-password');
+            console.log("email: ", req.body);
+            let userObj = await UserModel.findOne({
+                email: req.body.email
+            });
+
+            console.log('User: ', userObj);
 
             if (!userObj) {
                 return res.send({
@@ -16,11 +43,31 @@ module.exports = {
                 });
             }
 
-            return res.send({
-                statusCode: 200,
-                status: true,
-                message: "Data fetched successfully",
-                data: userObj
+            let isSame = await bcryptjs.compare(req.body.password, userObj.password);
+
+            if (!isSame) {
+                return res.send({
+                    statusCode: 401,
+                    status: false,
+                    message: "Email or password is incorrect"
+                });
+            }
+
+            jwt.sign({ id: userObj.id }, config.get("jwtSecret"), {
+                expiresIn: 2400000
+            }, (err, token) => {
+                let response = {};
+                if (err) {
+                    respone.statusCode = 500;
+                    response.status = false;
+                    response.message = "Server error";
+                } else {
+                    response.statusCode = 200;
+                    response.status = true;
+                    response.message = "User loggedin successfully!";
+                    response.token = token;
+                }
+                return res.send(response);
             });
 
         } catch (err) {
