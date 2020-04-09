@@ -75,20 +75,15 @@ module.exports = {
         if (linkedin) profileFields.social.linkedin = linkedin;
 
         try {
-            console.log('ID: ', req.decoded.id);
             let isExist = await ProfileModel.findOne({ user: req.decoded.id });
 
             let profile;
             if (!isExist) {
-                console.log('!isNew: ', isExist);
                 profile = await ProfileModel.create(profileFields);
-                console.log('!Profile: ', profile);
             } else {
-                console.log('isNew: ', isExist);
                 profile = await ProfileModel.findOneAndUpdate({ user: req.decoded.id }, { $set: profileFields }, {
                     new: true,
                 });
-                console.log('Profile: ', profile);
             }
 
             if (profile) {
