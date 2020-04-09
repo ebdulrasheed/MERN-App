@@ -1,4 +1,5 @@
 import React, { Fragment, useState } from 'react';
+import { Link } from 'react-router-dom';
 
 export const Register = () => {
 
@@ -43,8 +44,7 @@ export const Register = () => {
                         onChange={e => changeValue(e)} />
                     <small className="form-text"
                     >This site uses Gravatar so if you want a profile image, use a
-                        Gravatar email</small
-                    >
+                        Gravatar email</small>
                 </div>
                 <div className="form-group">
                     <input
@@ -69,9 +69,8 @@ export const Register = () => {
                 <input type="submit" className="btn btn-primary" value="Register" />
             </form>
             <p className="my-1">
-                Already have an account? <a href="login.html">Sign In</a>
+                Already have an account? <Link to="/login">Sign In</Link>
             </p>
-
         </Fragment>
     )
 }
