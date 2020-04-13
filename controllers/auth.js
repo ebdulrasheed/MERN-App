@@ -7,16 +7,6 @@ const { validationResult } = require("express-validator");
 module.exports = {
     authenticate: async function (req, res) {
 
-        /**
-         * LOGIN CODE HERE
-         * 
-         * SEARCH FOR USER via EMAIL
-         * if not found, respond with 494
-         * AUTHENTICATE
-         * CREATE JWT
-         * RETURN PROFILE + HWT
-         */
-
         const errors = validationResult(req);
 
         if (!errors.isEmpty()) {
@@ -28,12 +18,9 @@ module.exports = {
         }
 
         try {
-            console.log("email: ", req.body);
             let userObj = await UserModel.findOne({
                 email: req.body.email
             });
-
-            console.log('User: ', userObj);
 
             if (!userObj) {
                 return res.send({
