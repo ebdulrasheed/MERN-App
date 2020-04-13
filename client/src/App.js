@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import { Register } from '../src/components/auth/Register';
+import Register from '../src/components/auth/Register';
 import { Login } from '../src/components/auth/Login';
 import { Navbar } from '../src/components/layout/Navbar';
 import { Landing } from '../src/components/layout/Landing';
